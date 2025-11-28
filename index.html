@@ -39,20 +39,40 @@
             width: 80%;
             max-width: 500px;
         }
+        /* 为按钮添加一些样式 */
+        #playButton {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        #playButton:hover {
+            background-color: #ff45a1;
+        }
     </style>
 </head>
 <body>
 
     <h1>你好，余萍！</h1>
     
-    <!-- 注意：如果图片也在mypp文件夹里，这里也要加mypp/；如果图片在根目录，保持现状即可 -->
     <img src="beautiful.jpg" alt="萍萍" width="600">
 
-    <!-- 关键：加上mypp/文件夹路径 -->
-    <audio autoplay loop controls>
+    <!-- 音频标签，移除了 autoplay 属性 -->
+    <audio id="backgroundMusic" loop controls>
         <source src="曹格-寂寞寂寞不好.mp3" type="audio/mpeg">
         你的浏览器不支持音频播放哦~
    </audio>
+
+    <!-- 新增的播放按钮 -->
+    <button id="playButton">点击播放音乐</button>
 
     <div class="message">
         <p>圣旨到：余萍接旨</p>
@@ -61,6 +81,26 @@
         <p>细节里都透着认真</p>
         <p>这样又美又靠谱的女生真的超有魅力！</p>
     </div>
+
+    <script>
+        // 获取音频元素和按钮元素
+        const audio = document.getElementById('backgroundMusic');
+        const playButton = document.getElementById('playButton');
+
+        // 为按钮添加点击事件
+        playButton.addEventListener('click', function() {
+            // 尝试播放音频
+            audio.play().then(() => {
+                // 播放成功后，可以隐藏按钮或修改按钮文本
+                playButton.textContent = "音乐已播放";
+                playButton.disabled = true; // 禁用按钮，防止重复点击
+            }).catch(error => {
+                // 如果播放失败（例如浏览器仍有严格限制），在控制台打印错误
+                console.error('播放失败:', error);
+                alert('音乐播放失败，请尝试刷新页面或在浏览器设置中允许自动播放。');
+            });
+        });
+    </script>
 
 </body>
 </html>
