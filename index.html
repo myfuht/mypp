@@ -39,7 +39,6 @@
             width: 80%;
             max-width: 500px;
         }
-        /* 为按钮添加一些样式 */
         #playButton {
             background-color: #ff69b4;
             color: white;
@@ -61,17 +60,16 @@
 </head>
 <body>
 
-    <h1>你好，余萍！</h1>
+    <h1>你好 余萍！</h1>
     
     <img src="beautiful.jpg" alt="萍萍" width="600">
 
-    <!-- 音频标签，移除了 autoplay 属性 -->
+    <!-- 关键：去掉mypp/，直接写音乐文件名 -->
     <audio id="backgroundMusic" loop controls>
         <source src="曹格-寂寞寂寞不好.mp3" type="audio/mpeg">
         你的浏览器不支持音频播放哦~
    </audio>
 
-    <!-- 新增的播放按钮 -->
     <button id="playButton">点击播放音乐</button>
 
     <div class="message">
@@ -83,21 +81,16 @@
     </div>
 
     <script>
-        // 获取音频元素和按钮元素
         const audio = document.getElementById('backgroundMusic');
         const playButton = document.getElementById('playButton');
 
-        // 为按钮添加点击事件
         playButton.addEventListener('click', function() {
-            // 尝试播放音频
             audio.play().then(() => {
-                // 播放成功后，可以隐藏按钮或修改按钮文本
                 playButton.textContent = "音乐已播放";
-                playButton.disabled = true; // 禁用按钮，防止重复点击
+                playButton.disabled = true;
             }).catch(error => {
-                // 如果播放失败（例如浏览器仍有严格限制），在控制台打印错误
                 console.error('播放失败:', error);
-                alert('音乐播放失败，请尝试刷新页面或在浏览器设置中允许自动播放。');
+                alert('音乐播放失败，请尝试刷新页面~');
             });
         });
     </script>
