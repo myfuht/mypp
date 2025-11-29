@@ -9,6 +9,23 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.6); }
+        }
+        
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -20,6 +37,22 @@
             overflow-x: hidden;
             animation: fadeIn 1.5s ease-in-out;
             position: relative;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 105, 180, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 192, 203, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         h1 {
@@ -31,7 +64,7 @@
             opacity: 0;
             animation: fadeIn 1s forwards 0.5s;
             position: relative;
-            z-index: 100; /* 确保标题在最上层 */
+            z-index: 100;
         }
         
         /* --- 雪花效果 --- */
@@ -41,9 +74,9 @@
             height: 15px;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9); /* 增加光晕让它更亮 */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
             pointer-events: none;
-            z-index: 50; /* 确保在图片之上，文字之下 */
+            z-index: 50;
         }
 
         /* --- 爱心效果 --- */
@@ -54,7 +87,7 @@
             background-color: #ff69b4;
             transform: rotate(45deg);
             pointer-events: none;
-            z-index: 50; /* 确保在图片之上，文字之下 */
+            z-index: 50;
         }
 
         .heart:before,
@@ -79,7 +112,7 @@
             margin: 30px auto;
             flex-wrap: wrap;
             position: relative;
-            z-index: 10; /* 图片的层级 */
+            z-index: 10;
         }
         
         .content-container img {
@@ -88,55 +121,104 @@
             max-width: 100%;
             height: auto;
             border: 5px solid #fff;
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .content-container img:hover {
+            animation: glow 2s ease-in-out infinite, float 3s ease-in-out infinite;
+            transform: scale(1.02);
         }
         
         .message {
-            background-color: #ffebf0;
-            border-radius: 10px;
-            padding: 25px;
+            background: linear-gradient(135deg, #ffebf0 0%, #ffe4ec 100%);
+            border-radius: 15px;
+            padding: 30px;
             flex: 1;
             min-width: 300px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.15);
             font-size: 1.2em;
             line-height: 1.8;
-            color: #333;
+            color: #666;
             text-align: left;
-            border: 1px solid #ffd6e8;
+            border: 2px solid #ffd6e8;
+            position: relative;
+            z-index: 100;
+            backdrop-filter: blur(10px);
             opacity: 0;
             animation: fadeIn 1s forwards 1s;
-            position: relative;
-            z-index: 100; /* 确保文字在最上层 */
         }
+        
+        .message p {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: fadeInLeft 0.8s forwards;
+        }
+
+        .message p:nth-child(1) { animation-delay: 1.2s; }
+        .message p:nth-child(2) { animation-delay: 1.5s; }
+        .message p:nth-child(3) { animation-delay: 1.8s; }
+        .message p:nth-child(4) { animation-delay: 2.1s; }
+        .message p:nth-child(5) { animation-delay: 2.4s; }
         
         /* 播放按钮样式 */
         #playButton {
-            background-color: #ff69b4;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff85c0 100%);
             color: white;
             border: none;
-            padding: 15px 32px;
+            padding: 18px 40px;
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 18px;
-            margin: 20px auto;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 30px auto;
             cursor: pointer;
             border-radius: 50px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
             display: block;
             position: relative;
-            z-index: 100; /* 确保按钮在最上层 */
+            z-index: 100;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.8s;
         }
-        #playButton:hover {
-            background-color: #ff45a1;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+        
+        #playButton:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.5);
         }
+
+        #playButton:active {
+            transform: translateY(-1px);
+        }
+        
         #playButton:disabled {
-            background-color: #ccc;
+            background: linear-gradient(135deg, #cccccc 0%, #aaaaaa 100%);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .content-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .message {
+                min-width: unset;
+                padding: 20px;
+            }
+            
+            #playButton {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
         }
 
     </style>
@@ -148,7 +230,7 @@
     <button id="playButton">点击播放，聆听我的心声</button>
 
     <div class="content-container">
-        <img id="targetImage" src="beautiful.jpg" alt="萍萍">
+        <img id="targetImage" src="beautiful.jpg" alt="萍萍" onerror="this.style.display='none'">
         <div id="messageBox" class="message">
             <p>我攒了好多年的温柔与浪漫，想一次性全都给你。</p>
             <p>不是因为刚好喜欢你，是因为喜欢你，才觉得一切都刚好。</p>
@@ -171,16 +253,21 @@
         let animationId; // 用于存储动画帧ID
 
         playButton.addEventListener('click', function() {
+            playButton.textContent = "加载中...";
+            playButton.disabled = true;
+            
             // 确保只启动一次
             if (!animationId) {
                 startAnimation();
             }
 
             audio.play().then(() => {
-                playButton.textContent = "音乐已播放，愿你喜欢这份心意";
+                playButton.textContent = "🎵 音乐已播放，愿你喜欢这份心意";
                 playButton.disabled = true;
             }).catch(error => {
-                console.error('播放失败，请用户再次点击:', error);
+                console.error('播放失败:', error);
+                playButton.textContent = "点击播放，聆听我的心声";
+                playButton.disabled = false;
                 alert('播放失败，请点击确定后再次尝试播放~');
             });
         });
@@ -246,7 +333,14 @@
             // 随机动画速度
             const speed = 2 + Math.random() * 3; // 2px/frame 到 5px/frame
             // 随机大小
-            const size = 15 + Math.random() * 10;
+            const size = 12 + Math.random() * 15;
+            // 随机透明度
+            const opacity = 0.6 + Math.random() * 0.4;
+            
+            // 随机颜色变化
+            const hue = 330 + Math.random() * 30; // 粉红色系
+            heart.style.backgroundColor = `hsla(${hue}, 100%, 65%, ${opacity})`;
+            heart.style.boxShadow = `0 0 15px hsla(${hue}, 100%, 65%, ${opacity})`;
 
             heart.style.left = `${startX}px`;
             heart.style.top = `${startY}px`;
@@ -267,9 +361,13 @@
             const startX = imgLeft + Math.random() * imgWidth;
             // 随机动画速度 (雪花比爱心慢)
             const speed = 1 + Math.random() * 2; // 1px/frame 到 3px/frame
+            // 随机大小
+            const size = 8 + Math.random() * 12;
 
             snowflake.style.left = `${startX}px`;
             snowflake.style.top = `${startY}px`;
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
             // 使用dataset存储速度和初始X位置
             snowflake.dataset.speed = speed;
             snowflake.dataset.startX = startX;
