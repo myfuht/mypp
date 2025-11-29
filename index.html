@@ -5,19 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>致余萍的专属表白</title>
     <style>
+        /* 新增：页面加载动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f8ff;
-            padding: 50px;
+            background-color: #fdf2f8; /* 背景色调整为更浪漫的淡粉色 */
+            background-image: radial-gradient(#ffc1e9 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            padding: 50px 20px;
             margin: 0;
+            overflow-x: hidden; /* 防止爱心飘出时出现横向滚动条 */
+            animation: fadeIn 1.5s ease-in-out; /* 应用加载动画 */
         }
+
         h1 {
             color: #ff69b4;
-            font-size: 2.5em;
+            font-size: 2.8em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            opacity: 0; /* 初始透明，用于打字机效果 */
+            animation: fadeIn 1s forwards 0.5s; /* 延迟显示 */
         }
+        
+        /* 新增：爱心动画样式 */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            transform: rotate(45deg);
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.7;
+            z-index: 1; /* 确保爱心在背景层 */
+        }
+
+        .heart:before,
+        .heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart:before { top: -10px; left: 0; }
+        .heart:after { top: 0; left: -10px; }
+
+        @keyframes float {
+            0% {
+                transform: rotate(45deg) translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(45deg) translateY(-20vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
         /* 弹性布局容器：图片+文字 */
         .content-container {
             display: flex;
@@ -25,26 +81,33 @@
             gap: 30px;
             max-width: 900px;
             margin: 30px auto;
-            flex-wrap: wrap; /* 增加这行，使布局在小屏幕上更友好 */
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2; /* 确保内容在爱心之上 */
         }
         img {
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%; /* 修改为100%，配合flex-wrap使用 */
+            max-width: 100%;
             height: auto;
+            border: 5px solid #fff;
         }
         .message {
-            background-color: #ffebf0; /* 修改为粉色背景 */
+            background-color: #ffebf0;
             border-radius: 10px;
             padding: 25px;
             flex: 1;
-            min-width: 300px; /* 增加最小宽度，防止文字区域过窄 */
+            min-width: 300px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             font-size: 1.2em;
             line-height: 1.8;
             color: #333;
             text-align: left;
+            border: 1px solid #ffd6e8;
+            opacity: 0; /* 初始透明，用于打字机效果 */
+            animation: fadeIn 1s forwards 1s; /* 延迟显示 */
         }
+        
         /* 播放按钮样式 */
         #playButton {
             background-color: #ff69b4;
@@ -57,10 +120,12 @@
             font-size: 18px;
             margin: 20px auto;
             cursor: pointer;
-            border-radius: 50px; /* 使用圆形按钮更美观 */
+            border-radius: 50px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-            display: block; /* 使其成为块级元素，方便居中 */
+            display: block;
+            position: relative;
+            z-index: 2;
         }
         #playButton:hover {
             background-color: #ff45a1;
@@ -73,6 +138,26 @@
             transform: none;
             box-shadow: none;
         }
+        
+        /* 新增：打字机效果 */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blinkCaret {
+            from, to { border-color: transparent }
+            50% { border-color: #ff69b4 }
+        }
+        .typewriter p {
+            overflow: hidden; /* Ensures the content is not revealed until the animation */
+            border-right: .15em solid #ff69b4; /* The typwriter cursor */
+            white-space: nowrap; /* Keeps the content on a single line */
+            margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+            animation:
+                typing 3.5s steps(40, end),
+                blinkCaret .75s step-end infinite;
+        }
+        /* 为了让多行都有打字机效果，我们需要用JS控制，上面的CSS仅为单个元素示例 */
     </style>
 </head>
 <body>
@@ -87,7 +172,7 @@
         <img src="beautiful.jpg" alt="萍萍">
         
         <!-- 表白文字在右，已改为粉色背景 -->
-        <div class="message">
+        <div class="message" id="message">
             <p>我攒了好多年的温柔与浪漫，想一次性全都给你。</p>
             <p>不是因为刚好喜欢你，是因为喜欢你，才觉得一切都刚好。</p>
             <p>你是我藏在星河里的秘密，也是我穷极一生要寻的宝藏。</p>
@@ -96,30 +181,118 @@
         </div>
     </div>
 
-    <!-- 音乐元素默认隐藏 controls -->
+    <!-- 音乐元素 -->
     <audio id="backgroundMusic" loop>
         <source src="jimo.mp3" type="audio/mpeg">
         你的浏览器不支持音频播放哦~
     </audio>
 
     <script>
+        // 1. 音乐播放逻辑
         const audio = document.getElementById('backgroundMusic');
         const playButton = document.getElementById('playButton');
+        let hasInteracted = false; // 标记用户是否已交互
 
         playButton.addEventListener('click', function() {
-            // 尝试播放音乐
+            if (!hasInteracted) {
+                // 首次交互时，同时启动爱心动画和打字机效果
+                startHeartsAnimation();
+                startTypewriterEffect();
+                hasInteracted = true;
+            }
+
             audio.play().then(() => {
-                // 播放成功后，修改按钮状态
                 playButton.textContent = "音乐已播放，愿你喜欢这份心意";
                 playButton.disabled = true;
-                console.log('音乐播放成功');
             }).catch(error => {
-                // 如果播放失败（例如浏览器策略限制），给出提示
                 console.error('播放失败，请用户再次点击:', error);
                 alert('播放失败，请点击确定后再次尝试播放~');
             });
         });
-    </script>
 
+        // 2. 随机爱心动画逻辑
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // 随机位置 (left)
+            const startPosX = Math.random() * 100;
+            heart.style.left = `${startPosX}%`;
+            
+            // 随机大小
+            const size = Math.random() * 15 + 10; // 10px 到 25px
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            // 因为伪元素的尺寸依赖于父元素，所以需要调整伪元素大小
+            heart.style.setProperty('--heart-size', `${size}px`);
+
+            // 随机颜色 (从粉色到红色的渐变)
+            const hue = 350 + Math.random() * 20; // 350° (粉色) 到 370° (红色)
+            const saturation = 80 + Math.random() * 20;
+            const lightness = 60 + Math.random() * 10;
+            heart.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+            // 同样设置伪元素背景色
+            heart.style.setProperty('--heart-bg', `hsl(${hue}, ${saturation}%, ${lightness}%)`);
+            
+            // 随机动画时长 (3s 到 8s)
+            const animDuration = Math.random() * 5 + 3;
+            heart.style.animationDuration = `${animDuration}s`;
+            
+            // 随机延迟，让爱心不同时出现
+            const delay = Math.random() * 2;
+            heart.style.animationDelay = `${delay}s`;
+
+            document.body.appendChild(heart);
+
+            // 动画结束后移除元素，防止DOM堆积
+            setTimeout(() => {
+                heart.remove();
+            }, (animDuration + delay) * 1000);
+        }
+
+        function startHeartsAnimation() {
+            // 每隔一段时间创建一个爱心
+            setInterval(createHeart, 500); // 每500ms创建一个
+            // 初始创建一批
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createHeart, i * 200);
+            }
+        }
+
+        // 3. 打字机效果逻辑 (更平滑的多行实现)
+        function startTypewriterEffect() {
+            const messageElement = document.getElementById('message');
+            const originalTexts = Array.from(messageElement.querySelectorAll('p')).map(p => p.textContent);
+            
+            // 清空内容，准备打字机效果
+            messageElement.innerHTML = '';
+
+            originalTexts.forEach((text, index) => {
+                const pElement = document.createElement('p');
+                pElement.style.opacity = '0'; // 先隐藏
+                messageElement.appendChild(pElement);
+
+                // 为每一行设置延迟，逐行显示
+                setTimeout(() => {
+                    typeText(pElement, text, 0);
+                }, index * 2000); // 每行间隔2秒开始
+            });
+        }
+
+        function typeText(element, text, index) {
+            if (index < text.length) {
+                element.textContent += text.charAt(index);
+                element.style.opacity = '1'; // 开始显示
+                setTimeout(() => typeText(element, text, index + 1), 100); // 每个字符间隔100ms
+            } else {
+                // 一行打完后，添加光标闪烁效果一小段时间
+                element.style.borderRight = '.15em solid #ff69b4';
+                setTimeout(() => {
+                    element.style.borderRight = 'none';
+                }, 1000);
+            }
+        }
+
+    </script>
 </body>
 </html>
