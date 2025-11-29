@@ -3,97 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>致余萍的专属网站</title>
+    <title>致余萍</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            text-align: center;
             background-color: #f0f8ff;
             padding: 50px;
+            margin: 0;
         }
         h1 {
             color: #ff69b4;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        /* 弹性布局容器：图片+文字 */
+        .content-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
         }
         img {
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
-            max-width: 80%;
+            max-width: 40%;
             height: auto;
         }
         .message {
             background-color: #ffffff;
             border-radius: 10px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
+            padding: 25px;
+            flex: 1;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             font-size: 1.2em;
-            line-height: 1.6;
+            line-height: 1.8;
             color: #333;
+            text-align: left;
         }
+        /* 音乐标签隐藏（自动播放） */
         audio {
-            margin: 20px 0;
-            width: 80%;
-            max-width: 500px;
-        }
-        #playButton {
-            background-color: #ff69b4;
-            color: white;
-            border: none;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-        #playButton:hover {
-            background-color: #ff45a1;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>你好 余萍！</h1>
+    <h1>致我最特别的萍萍</h1>
     
-    <img src="beautiful.jpg" alt="萍萍" width="600">
-
-    <!-- 关键：去掉mypp/，直接写音乐文件名 -->
-    <audio id="backgroundMusic" loop controls>
-        <source src="jimo.mp3" type="audio/mpeg">
-        你的浏览器不支持音频播放哦~
-   </audio>
-
-    <button id="playButton">点击播放音乐</button>
-
-    <div class="message">
-        <p>圣旨到：余萍接旨</p>
-        <p>余萍你不仅长得好看</p>
-        <p>做事还特别有条理</p>
-        <p>细节里都透着认真</p>
-        <p>这样又美又靠谱的女生真的超有魅力！</p>
+    <div class="content-container">
+        <!-- 图片在左 -->
+        <img src="beautiful.jpg" alt="萍萍">
+        
+        <!-- 表白文字在右 -->
+        <div class="message">
+            <p>我攒了好多年的温柔与浪漫，想一次性全都给你。</p>
+            <p>不是因为刚好喜欢你，是因为喜欢你，才觉得一切都刚好。</p>
+            <p>你是我藏在星河里的秘密，也是我穷极一生要寻的宝藏。</p>
+            <p>世界很大，幸福很小，有你在，就刚刚好。</p>
+            <p>我喜欢你，从清晨到日暮，从心动到古稀。</p>
+        </div>
     </div>
 
-    <script>
-        const audio = document.getElementById('backgroundMusic');
-        const playButton = document.getElementById('playButton');
-
-        playButton.addEventListener('click', function() {
-            audio.play().then(() => {
-                playButton.textContent = "音乐已播放";
-                playButton.disabled = true;
-            }).catch(error => {
-                console.error('播放失败:', error);
-                alert('音乐播放失败，请尝试刷新页面~');
-            });
-        });
-    </script>
+    <!-- 音乐自动循环播放 -->
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="jimo.mp3" type="audio/mpeg">
+        你的浏览器不支持音频播放哦~
+    </audio>
 
 </body>
 </html>
