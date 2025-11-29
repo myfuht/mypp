@@ -31,41 +31,19 @@
             opacity: 0;
             animation: fadeIn 1s forwards 0.5s;
             position: relative;
-            z-index: 10;
+            z-index: 100; /* 确保标题在最上层 */
         }
         
-        /* --- 雪花效果 (已优化清晰度) --- */
+        /* --- 雪花效果 --- */
         .snowflake {
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #ffffff;
+            width: 15px;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
-            /* 移除过度模糊，增加边框让它更清晰 */
-            border: 1px solid #f0f0f0;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-            animation: snowfall linear forwards;
-            opacity: 0.9;
-            z-index: 7; /* 确保在图片之上 */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.9); /* 增加光晕让它更亮 */
             pointer-events: none;
-        }
-
-        @keyframes snowfall {
-            0% {
-                transform: translateY(-10px) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                /* 动画终点将由JS动态设置 */
-                transform: translateY(0) rotate(360deg);
-                opacity: 0;
-            }
+            z-index: 50; /* 确保在图片之上，文字之下 */
         }
 
         /* --- 爱心效果 --- */
@@ -75,10 +53,8 @@
             height: 20px;
             background-color: #ff69b4;
             transform: rotate(45deg);
-            animation: float linear forwards;
-            opacity: 0.8;
-            z-index: 7; /* 确保在图片之上 */
             pointer-events: none;
+            z-index: 50; /* 确保在图片之上，文字之下 */
         }
 
         .heart:before,
@@ -94,24 +70,6 @@
         .heart:before { top: -10px; left: 0; }
         .heart:after { top: 0; left: -10px; }
 
-        @keyframes float {
-            0% {
-                transform: rotate(45deg) translateY(-10px);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                /* 动画终点将由JS动态设置 */
-                transform: rotate(45deg) translateY(0);
-                opacity: 0;
-            }
-        }
-
         /* 弹性布局容器 */
         .content-container {
             display: flex;
@@ -121,7 +79,7 @@
             margin: 30px auto;
             flex-wrap: wrap;
             position: relative;
-            z-index: 5; /* 图片和内容的基础层级 */
+            z-index: 10; /* 图片的层级 */
         }
         
         .content-container img {
@@ -130,7 +88,6 @@
             max-width: 100%;
             height: auto;
             border: 5px solid #fff;
-            /* 图片本身不需要特别高的z-index，因为父容器已经设置了 */
         }
         
         .message {
@@ -148,7 +105,7 @@
             opacity: 0;
             animation: fadeIn 1s forwards 1s;
             position: relative;
-            z-index: 10; /* 确保文字在最上层，粒子会消失在它下面 */
+            z-index: 100; /* 确保文字在最上层 */
         }
         
         /* 播放按钮样式 */
@@ -168,7 +125,7 @@
             box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
             display: block;
             position: relative;
-            z-index: 10;
+            z-index: 100; /* 确保按钮在最上层 */
         }
         #playButton:hover {
             background-color: #ff45a1;
@@ -211,19 +168,12 @@
         const playButton = document.getElementById('playButton');
         const targetImage = document.getElementById('targetImage');
         const messageBox = document.getElementById('messageBox');
-        let hasInteracted = false;
+        let animationId; // 用于存储动画帧ID
 
-        // 等待图片加载完成后再获取其位置信息
-        targetImage.onload = function() {
-            // 图片加载后可以做一些初始化，但动画启动还是在点击后
-        };
-        
         playButton.addEventListener('click', function() {
-            if (!hasInteracted) {
-                // 启动动画
-                startHeartsAnimation();
-                startSnowfallAnimation();
-                hasInteracted = true;
+            // 确保只启动一次
+            if (!animationId) {
+                startAnimation();
             }
 
             audio.play().then(() => {
@@ -235,131 +185,97 @@
             });
         });
 
-        // 获取元素位置信息的辅助函数
-        function getElementRect(element) {
-            const rect = element.getBoundingClientRect();
-            // 转换为相对于文档的坐标，防止滚动影响
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            return {
-                top: rect.top + scrollTop,
-                left: rect.left + scrollLeft,
-                width: rect.width,
-                height: rect.height,
-                bottom: rect.bottom + scrollTop
-            };
+        // 动画主函数
+        function startAnimation() {
+            const particles = [];
+            let lastParticleTime = 0;
+            const particleInterval = 100; // 每100ms创建一个新粒子
+
+            // 获取关键位置信息
+            const imgRect = targetImage.getBoundingClientRect();
+            const msgRect = messageBox.getBoundingClientRect();
+            const startY = imgRect.top - 50; // 粒子开始位置 (图片上方)
+            const endY = msgRect.bottom;     // 粒子消失位置 (文字底部)
+            const fallDistance = endY - startY;
+
+            // 动画循环
+            function animate(timestamp) {
+                // 定期创建新粒子
+                if (timestamp - lastParticleTime > particleInterval) {
+                    // 随机创建爱心或雪花
+                    if (Math.random() > 0.5) {
+                        createHeart(startY, imgRect.left, imgRect.width, fallDistance);
+                    } else {
+                        createSnowflake(startY, imgRect.left, imgRect.width, fallDistance);
+                    }
+                    lastParticleTime = timestamp;
+                }
+
+                // 更新所有粒子的位置
+                document.querySelectorAll('.heart, .snowflake').forEach(particle => {
+                    const speed = parseFloat(particle.dataset.speed);
+                    const currentY = parseFloat(particle.style.top);
+                    const newY = currentY + speed;
+
+                    // 检查粒子是否已经落到终点
+                    if (newY > endY) {
+                        particle.remove();
+                    } else {
+                        particle.style.top = `${newY}px`;
+                        // 让雪花有轻微的左右摇摆
+                        if (particle.classList.contains('snowflake')) {
+                           const swing = Math.sin(timestamp / 500) * 2;
+                           particle.style.left = `${parseFloat(particle.dataset.startX) + swing}px`;
+                        }
+                    }
+                });
+
+                animationId = requestAnimationFrame(animate);
+            }
+
+            animationId = requestAnimationFrame(animate);
         }
 
-        // --- 爱心动画逻辑 (已优化路径) ---
-        function createHeart() {
+        // 创建爱心粒子
+        function createHeart(startY, imgLeft, imgWidth, fallDistance) {
             const heart = document.createElement('div');
             heart.classList.add('heart');
             
-            const imgRect = getElementRect(targetImage);
-            const msgRect = getElementRect(messageBox);
+            // 随机水平位置 (图片范围内)
+            const startX = imgLeft + Math.random() * imgWidth;
+            // 随机动画速度
+            const speed = 2 + Math.random() * 3; // 2px/frame 到 5px/frame
+            // 随机大小
+            const size = 15 + Math.random() * 10;
 
-            // 随机水平位置 (在图片宽度范围内)
-            const startPosX = imgRect.left + Math.random() * imgRect.width;
-            // 从图片上方开始
-            const startPosY = imgRect.top - 50;
-            // 落到文字区域底部消失
-            const endPosY = msgRect.bottom;
-            
-            const fallDistance = endPosY - startPosY;
-            const animDuration = (fallDistance / 500) * 3; // 根据距离调整速度
-            
-            heart.style.left = `${startPosX}px`;
-            heart.style.top = `${startPosY}px`;
-            
-            // 动态设置动画
-            heart.style.animationName = 'float';
-            heart.style.animationDuration = `${animDuration}s`;
-            heart.style.animationFillMode = 'forwards';
-
-            // 动态修改关键帧的最终位置
-            const styleSheet = document.styleSheets[0];
-            let floatKeyframes = null;
-            for (let i = 0; i < styleSheet.cssRules.length; i++) {
-                if (styleSheet.cssRules[i].name === 'float') {
-                    floatKeyframes = styleSheet.cssRules[i];
-                    break;
-                }
-            }
-            if (floatKeyframes) {
-                floatKeyframes.deleteRule(100);
-                floatKeyframes.insertRule(`100% { transform: rotate(45deg) translateY(${fallDistance}px); opacity: 0; }`, floatKeyframes.cssRules.length);
-            }
+            heart.style.left = `${startX}px`;
+            heart.style.top = `${startY}px`;
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            // 使用dataset存储速度，方便后续更新
+            heart.dataset.speed = speed;
 
             document.body.appendChild(heart);
-
-            // 动画结束后移除元素
-            setTimeout(() => {
-                heart.remove();
-            }, animDuration * 1000);
         }
 
-        function startHeartsAnimation() {
-            setInterval(createHeart, 800);
-            for (let i = 0; i < 3; i++) {
-                setTimeout(createHeart, i * 300);
-            }
-        }
-
-        // --- 雪花动画逻辑 (已优化路径和清晰度) ---
-        function createSnowflake() {
+        // 创建雪花粒子
+        function createSnowflake(startY, imgLeft, imgWidth, fallDistance) {
             const snowflake = document.createElement('div');
             snowflake.classList.add('snowflake');
             
-            const imgRect = getElementRect(targetImage);
-            const msgRect = getElementRect(messageBox);
+            // 随机水平位置 (图片范围内)
+            const startX = imgLeft + Math.random() * imgWidth;
+            // 随机动画速度 (雪花比爱心慢)
+            const speed = 1 + Math.random() * 2; // 1px/frame 到 3px/frame
 
-            // 随机水平位置 (在图片宽度范围内)
-            const startPosX = imgRect.left + Math.random() * imgRect.width;
-            // 从图片上方开始
-            const startPosY = imgRect.top - 50;
-            // 落到文字区域底部消失
-            const endPosY = msgRect.bottom;
-
-            const fallDistance = endPosY - startPosY;
-            const animDuration = (fallDistance / 300) * 3; // 雪花下落慢一些
-            
-            snowflake.style.left = `${startPosX}px`;
-            snowflake.style.top = `${startPosY}px`;
-
-            // 动态设置动画
-            snowflake.style.animationName = 'snowfall';
-            snowflake.style.animationDuration = `${animDuration}s`;
-            snowflake.style.animationFillMode = 'forwards';
-
-            // 动态修改关键帧的最终位置
-            const styleSheet = document.styleSheets[0];
-            let snowKeyframes = null;
-            for (let i = 0; i < styleSheet.cssRules.length; i++) {
-                if (styleSheet.cssRules[i].name === 'snowfall') {
-                    snowKeyframes = styleSheet.cssRules[i];
-                    break;
-                }
-            }
-            if (snowKeyframes) {
-                snowKeyframes.deleteRule(100);
-                snowKeyframes.insertRule(`100% { transform: translateY(${fallDistance}px) rotate(360deg); opacity: 0; }`, snowKeyframes.cssRules.length);
-            }
+            snowflake.style.left = `${startX}px`;
+            snowflake.style.top = `${startY}px`;
+            // 使用dataset存储速度和初始X位置
+            snowflake.dataset.speed = speed;
+            snowflake.dataset.startX = startX;
 
             document.body.appendChild(snowflake);
-
-            // 动画结束后移除元素
-            setTimeout(() => {
-                snowflake.remove();
-            }, animDuration * 1000);
         }
-
-        function startSnowfallAnimation() {
-            setInterval(createSnowflake, 500);
-            for (let i = 0; i < 5; i++) {
-                setTimeout(createSnowflake, i * 200);
-            }
-        }
-
     </script>
 </body>
 </html>
